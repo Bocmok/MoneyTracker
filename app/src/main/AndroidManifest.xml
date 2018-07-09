@@ -14,7 +14,7 @@
         <activity android:name=".AddItemActivity">
 
         </activity>
-        <activity android:name=".ItemListActivity">
+        <activity android:name=".ItemsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
