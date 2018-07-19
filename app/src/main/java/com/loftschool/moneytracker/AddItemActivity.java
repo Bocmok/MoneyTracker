@@ -14,7 +14,6 @@ public class AddItemActivity extends AppCompatActivity {
     private Button addBtn;
     private int n;
 
-    private static final String TAG = "AddItemActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

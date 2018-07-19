@@ -80,7 +80,7 @@ public class ItemsFragment extends Fragment {
         });
     }
 
-
+//  Handler
 //    private void loadItems(){
 //        new LoadItemTask(new Handler(callback)).start();
 //

@@ -38,6 +38,7 @@ class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.RecordViewHolder> {
 
 //    private void createData() {
 //        data.add(new Item("Молоко",42));
+
 //        data.add(new Item("Хлеб",36));
 //        data.add(new Item("Ракета",10));
 //        data.add(new Item("Лего",658425125));
