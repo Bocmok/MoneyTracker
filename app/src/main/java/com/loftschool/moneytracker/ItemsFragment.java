@@ -1,11 +1,17 @@
 package com.loftschool.moneytracker;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +30,13 @@ public class ItemsFragment extends Fragment {
     private static final String TYPE_KEY="type";
     private String type;
     private Api api;
+
+    private FloatingActionButton fab;
+    private SwipeRefreshLayout refresh;
+
+    private static final int ADD_ITEM_REQUEST_CODE=123;
+
+    private static final String TAG = "ItemsFragment";
 
     public static ItemsFragment createItemsFragment(String type){
         ItemsFragment fragment=new ItemsFragment();
@@ -61,6 +74,31 @@ public class ItemsFragment extends Fragment {
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         recycler.setAdapter(adapter);
 
+        fab=view.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(getContext(), AddItemActivity.class);
+                intent.putExtra(AddItemActivity.TYPE_KEY,type);
+                startActivityForResult(intent, ADD_ITEM_REQUEST_CODE);
+
+                //неявный Intent
+//                Intent intent=new Intent();
+//                intent.setAction(Intent.ACTION_VIEW);
+//                intent.setData(Uri.parse("https://pikabu.ru"));
+//                startActivity(intent);
+            }
+        });
+
+        refresh=view.findViewById(R.id.refresh);
+        refresh.setColorSchemeColors(Color.GREEN,Color.MAGENTA,Color.CYAN);
+        refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadItems();
+            }
+        });
+
         loadItems();
     }
 
@@ -71,57 +109,29 @@ public class ItemsFragment extends Fragment {
             @Override
             public void onResponse(Call<List<Item>> call, Response<List<Item>> response) {
                 adapter.setData(response.body());
+                refresh.setRefreshing(false);
             }
 
             @Override
             public void onFailure(Call<List<Item>> call, Throwable t) {
-
+                refresh.setRefreshing(false);
             }
         });
     }
 
-//  Handler
-//    private void loadItems(){
-//        new LoadItemTask(new Handler(callback)).start();
-//
-//    }
-//
-//    private Handler.Callback callback=new Handler.Callback() {
-//        @Override
-//        public boolean handleMessage(Message message) {
-//            if (message.what==DATA_LOADED){
-//                List<Item>items=(List<Item>) message.obj;
-//                adapter.setData(items);
-//            }
-//            return true;
-//        }
-//    };
-//
-//    private final static int DATA_LOADED=123;
-//
-//    private class LoadItemTask implements Runnable{
-//
-//        private Thread thread;
-//        private Handler handler;
-//
-//        public LoadItemTask(Handler handler){
-//            thread=new Thread(this);
-//            this.handler=handler;
-//        }
-//
-//        public void start(){
-//            thread.start();
-//        }
-//
-//        @Override
-//        public void run() {
-//            Call<List<Item>> call=api.getItem(type);
-//            try {
-//                List<Item>items= call.execute().body();
-//                handler.obtainMessage(DATA_LOADED,items).sendToTarget();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode==ADD_ITEM_REQUEST_CODE&&resultCode== Activity.RESULT_OK){
+            Item item=data.getParcelableExtra("item");
+//            String name=data.getStringExtra("name");
+//            String price=data.getStringExtra("price");
+              Log.i(TAG, "onActivityResult: name = "+item.name+" price = "+item.price);
+              adapter.addItem(item);
+        }
+
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
+
 }
