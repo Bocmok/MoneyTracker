@@ -1,10 +1,10 @@
 package com.loftschool.moneytracker;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -12,9 +12,11 @@ public class AddItemActivity extends AppCompatActivity {
     private EditText name;
     private EditText price;
     private Button addBtn;
-    private int n;
 
-    private static final String TAG = "AddItemActivity";
+    public static final String TYPE_KEY="type";
+
+    String type;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,42 +24,46 @@ public class AddItemActivity extends AppCompatActivity {
         setContentView(R.layout.activity_additem);
         setTitle(R.string.add_item_title);
 
+        Toolbar toolbar=findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setTitle(R.string.add_item_title);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         name=findViewById(R.id.name);
         price=findViewById(R.id.price);
         addBtn=findViewById(R.id.add_btn);
 
+        type=getIntent().getStringExtra(TYPE_KEY);
 
+        EditText[] edList = {name, price};
+        CustomTextWatcher textWatcher = new CustomTextWatcher(edList, addBtn);
+        for (EditText editText : edList) editText.addTextChangedListener(textWatcher);
 
-        name.addTextChangedListener(new TextWatcher() {
+        addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            public void onClick(View view) {
+                String itemName=name.getText().toString();
+                String itemPrice=price.getText().toString();
 
-            }
+                Item item=new Item(itemName,itemPrice,type);
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                final String itemPrice=price.getText().toString();
-                if (!TextUtils.isEmpty(itemPrice)) n=1;
+                Intent intent=new Intent();
+                intent.putExtra("item",item);
+//                intent.putExtra("name", itemName);
+//                intent.putExtra("price",itemPrice);
 
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-                if ((!TextUtils.isEmpty(editable))&(n==1)) addBtn.setEnabled(true);
+                setResult(RESULT_OK,intent);
+                finish();
             }
         });
 
-
-
-
-//        addBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                String itemName=name.getText().toString();
-//                String itemPrice=price.getText().toString();
-//            }
-//        });
     }
 
+
 }
+
+
+
+
+
