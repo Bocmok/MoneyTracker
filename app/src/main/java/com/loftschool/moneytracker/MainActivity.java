@@ -2,6 +2,7 @@ package com.loftschool.moneytracker;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private FloatingActionButton fab;
+
+    private android.support.v7.view.ActionMode actionMode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +89,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 break;
                 case ViewPager.SCROLL_STATE_DRAGGING:
                     case ViewPager.SCROLL_STATE_SETTLING:
+                        if (actionMode!= null){
+                            actionMode.finish();
+                        }
                         fab.setEnabled(false);
                         break;
 
@@ -98,5 +105,21 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             fragment.onActivityResult(requestCode,resultCode,data);
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onSupportActionModeStarted(@NonNull android.support.v7.view.ActionMode mode) {
+        super.onSupportActionModeStarted(mode);
+
+        fab.hide();
+        actionMode=mode;
+    }
+
+    @Override
+    public void onSupportActionModeFinished(@NonNull android.support.v7.view.ActionMode mode) {
+        super.onSupportActionModeFinished(mode);
+
+        fab.show();
+        actionMode=null;
     }
 }

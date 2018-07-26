@@ -49,10 +49,7 @@ public class AddItemActivity extends AppCompatActivity {
                 Item item=new Item(itemName,itemPrice,type);
 
                 Intent intent=new Intent();
-                intent.putExtra("item",item);
-//                intent.putExtra("name", itemName);
-//                intent.putExtra("price",itemPrice);
-
+                intent.putExtra("item",item);;
                 setResult(RESULT_OK,intent);
                 finish();
             }
