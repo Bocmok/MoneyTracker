@@ -6,12 +6,10 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,10 +29,10 @@ public class ItemsFragment extends Fragment {
     private String type;
     private Api api;
 
-    private FloatingActionButton fab;
+
     private SwipeRefreshLayout refresh;
 
-    private static final int ADD_ITEM_REQUEST_CODE=123;
+    public static final int ADD_ITEM_REQUEST_CODE=123;
 
     private static final String TAG = "ItemsFragment";
 
@@ -74,22 +72,6 @@ public class ItemsFragment extends Fragment {
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         recycler.setAdapter(adapter);
 
-        fab=view.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(getContext(), AddItemActivity.class);
-                intent.putExtra(AddItemActivity.TYPE_KEY,type);
-                startActivityForResult(intent, ADD_ITEM_REQUEST_CODE);
-
-                //неявный Intent
-//                Intent intent=new Intent();
-//                intent.setAction(Intent.ACTION_VIEW);
-//                intent.setData(Uri.parse("https://pikabu.ru"));
-//                startActivity(intent);
-            }
-        });
-
         refresh=view.findViewById(R.id.refresh);
         refresh.setColorSchemeColors(Color.GREEN,Color.MAGENTA,Color.CYAN);
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -123,10 +105,9 @@ public class ItemsFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode==ADD_ITEM_REQUEST_CODE&&resultCode== Activity.RESULT_OK){
             Item item=data.getParcelableExtra("item");
-//            String name=data.getStringExtra("name");
-//            String price=data.getStringExtra("price");
-              Log.i(TAG, "onActivityResult: name = "+item.name+" price = "+item.price);
-              adapter.addItem(item);
+            if (item.type.equals(type)){
+                adapter.addItem(item);
+            }
         }
 
 
