@@ -30,20 +30,20 @@ public class ItemsFragment extends Fragment {
     private RecyclerView recycler;
     private ItemsAdapter adapter;
 
-    private static final String TYPE_KEY="type";
+    private static final String TYPE_KEY = "type";
     private String type;
     private Api api;
 
 
     private SwipeRefreshLayout refresh;
 
-    public static final int ADD_ITEM_REQUEST_CODE=123;
+    public static final int ADD_ITEM_REQUEST_CODE = 123;
 
 
-    public static ItemsFragment createItemsFragment(String type){
-        ItemsFragment fragment=new ItemsFragment();
+    public static ItemsFragment createItemsFragment(String type) {
+        ItemsFragment fragment = new ItemsFragment();
 
-        Bundle bundle=new Bundle();
+        Bundle bundle = new Bundle();
         bundle.putString(ItemsFragment.TYPE_KEY, type);
 
         fragment.setArguments(bundle);
@@ -54,21 +54,21 @@ public class ItemsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        adapter =new ItemsAdapter();
+        adapter = new ItemsAdapter();
         adapter.setListener(new AdapterListener());
 
-        Bundle bundle=getArguments();
-        type=bundle.getString(TYPE_KEY,Item.TYPE_UNKNOWN);
-        if (type.equals(Item.TYPE_UNKNOWN)){
+        Bundle bundle = getArguments();
+        type = bundle.getString(TYPE_KEY, Item.TYPE_UNKNOWN);
+        if (type.equals(Item.TYPE_UNKNOWN)) {
             throw new IllegalArgumentException("Unknown type");
         }
-        api=((App) getActivity().getApplication()).getApi();
+        api = ((App) getActivity().getApplication()).getApi();
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view= inflater.inflate(R.layout.fragment_items, container,false);
+        View view = inflater.inflate(R.layout.fragment_items, container, false);
         return view;
     }
 
@@ -79,8 +79,8 @@ public class ItemsFragment extends Fragment {
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         recycler.setAdapter(adapter);
 
-        refresh=view.findViewById(R.id.refresh);
-        refresh.setColorSchemeColors(Color.GREEN,Color.MAGENTA,Color.CYAN);
+        refresh = view.findViewById(R.id.refresh);
+        refresh.setColorSchemeColors(Color.GREEN, Color.MAGENTA, Color.CYAN);
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -91,8 +91,8 @@ public class ItemsFragment extends Fragment {
         loadItems();
     }
 
-    private void loadItems(){
-        Call<List<Item>> call=api.getItem(type);
+    private void loadItems() {
+        Call<List<Item>> call = api.getItem(type);
 
         call.enqueue(new Callback<List<Item>>() {
             @Override
@@ -110,9 +110,9 @@ public class ItemsFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode==ADD_ITEM_REQUEST_CODE&&resultCode== Activity.RESULT_OK){
-            Item item=data.getParcelableExtra("item");
-            if (item.type.equals(type)){
+        if (requestCode == ADD_ITEM_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            Item item = data.getParcelableExtra("item");
+            if (item.type.equals(type)) {
                 adapter.addItem(item);
             }
         }
@@ -123,53 +123,52 @@ public class ItemsFragment extends Fragment {
     }
 
 
-
     /*   ACTION MODE  */
 
-    private ActionMode actionMode=null;
+    private ActionMode actionMode = null;
 
-    private void removeSelectedItems(){
-        for (int i = adapter.getSelectedItems().size()-1; i>=0; i--){
+    private void removeSelectedItems() {
+        for (int i = adapter.getSelectedItems().size() - 1; i >= 0; i--) {
             adapter.remove(adapter.getSelectedItems().get(i));
         }
         actionMode.finish();
     }
 
-    private  class AdapterListener implements ItemsAdapterListener{
+    private class AdapterListener implements ItemsAdapterListener {
 
         @Override
         public void onItemClick(Item item, int position) {
-            if (isInActionMode()){
+            if (isInActionMode()) {
                 toggleSelection(position);
             }
         }
 
         @Override
         public void OnItemLongClick(Item item, int position) {
-            if(isInActionMode()) {
+            if (isInActionMode()) {
                 return;
             }
 
-            actionMode=((AppCompatActivity) getActivity()).startSupportActionMode(actionModeCallback);
+            actionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(actionModeCallback);
             toggleSelection(position);
         }
 
-        private boolean isInActionMode(){
+        private boolean isInActionMode() {
             return actionMode != null;
         }
 
-        private void toggleSelection(int position){
+        private void toggleSelection(int position) {
             adapter.toggleSelection(position);
         }
     }
 
 
-    private ActionMode.Callback actionModeCallback =new ActionMode.Callback(){
+    private ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            MenuInflater inflater=new MenuInflater(getContext());
-            inflater.inflate(R.menu.items_menu,menu);
+            MenuInflater inflater = new MenuInflater(getContext());
+            inflater.inflate(R.menu.items_menu, menu);
             return true;
         }
 
@@ -180,11 +179,11 @@ public class ItemsFragment extends Fragment {
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()){
+            switch (item.getItemId()) {
                 case R.id.remove:
                     showDialog();
                     //removeSelectedItems();
-                break;
+                    break;
             }
             return false;
         }
@@ -192,13 +191,24 @@ public class ItemsFragment extends Fragment {
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             adapter.clearSelections();
-            actionMode=null;
+            actionMode = null;
         }
     };
 
-    private void showDialog(){
+    private void showDialog() {
         ConfirmationDialog dialog = new ConfirmationDialog();
-        dialog.show(getFragmentManager(),"ConfirmationDialog");
-    }
+        dialog.show(getFragmentManager(), "ConfirmationDialog");
+        dialog.setListener(new ConfirmationDialogListener() {
+            @Override
+            public void onPositiveBtnClick() {
+                removeSelectedItems();
+            }
 
+            @Override
+            public void onNegativeButtonClick() {
+                actionMode.finish();
+            }
+        });
+
+    }
 }
