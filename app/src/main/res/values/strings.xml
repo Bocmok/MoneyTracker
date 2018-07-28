@@ -6,10 +6,16 @@
     <string name="tab_incomes">Доходы</string>
     <string name="tab_expenses">Расходы</string>
     <string name="tab_balance">Баланс</string>
-    
+
     <string-array name="tab_titles">
         <item>@string/tab_incomes</item>
         <item>@string/tab_expenses</item>
         <item>@string/tab_balance</item>
     </string-array>
+
+    <string name="dialog_title">Удаление</string>
+    <string name="dialog_message">Вы уверены?</string>
+    <string name="dialog_positive_button">Да</string>
+    <string name="dialog_negative_button">Нет</string>
+
 </resources>
