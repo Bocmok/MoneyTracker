@@ -123,6 +123,7 @@ public class ItemsFragment extends Fragment {
            public void onResponse(Call<AddItemResult> call, Response<AddItemResult> response) {
                AddItemResult result = response.body();
                if (result.status.equals("success")){
+                   item.id = result.id;
                    adapter.addItem(item);
                }
            }
@@ -134,7 +135,7 @@ public class ItemsFragment extends Fragment {
        });
     }
 
-    private void removeItem(final Item item){
+    private void removeItem(Item item){
         Call<RemoveItemResult> call = api.removeItem(item.id);
 
         call.enqueue(new Callback<RemoveItemResult>() {
@@ -162,8 +163,6 @@ public class ItemsFragment extends Fragment {
                 addItem(item);
             }
         }
-
-
         super.onActivityResult(requestCode, resultCode, data);
 
     }
@@ -175,7 +174,8 @@ public class ItemsFragment extends Fragment {
 
     private void removeSelectedItems() {
         for (int i = adapter.getSelectedItems().size() - 1; i >= 0; i--) {
-           adapter.remove(adapter.getSelectedItems().get(i));
+            Item item = adapter.remove(adapter.getSelectedItems().get(i));
+            removeItem(item);
         }
         actionMode.finish();
     }
