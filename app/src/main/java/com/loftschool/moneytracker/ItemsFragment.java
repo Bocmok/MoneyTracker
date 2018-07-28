@@ -19,6 +19,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.loftschool.moneytracker.Api.AddItemResult;
+import com.loftschool.moneytracker.Api.Api;
+import com.loftschool.moneytracker.Api.RemoveItemResult;
+
 import java.util.List;
 
 import retrofit2.Call;
@@ -33,6 +37,7 @@ public class ItemsFragment extends Fragment {
     private static final String TYPE_KEY = "type";
     private String type;
     private Api api;
+    private App app;
 
 
     private SwipeRefreshLayout refresh;
@@ -62,7 +67,9 @@ public class ItemsFragment extends Fragment {
         if (type.equals(Item.TYPE_UNKNOWN)) {
             throw new IllegalArgumentException("Unknown type");
         }
-        api = ((App) getActivity().getApplication()).getApi();
+
+        app = (App) getActivity().getApplication();
+        api = app.getApi();
     }
 
     @Nullable
@@ -108,12 +115,51 @@ public class ItemsFragment extends Fragment {
         });
     }
 
+    private void addItem(final Item item){
+       Call<AddItemResult> call = api.addItem(item.name, item.price, item.type);
+
+       call.enqueue(new Callback<AddItemResult>() {
+           @Override
+           public void onResponse(Call<AddItemResult> call, Response<AddItemResult> response) {
+               AddItemResult result = response.body();
+               if (result.status.equals("success")){
+                   adapter.addItem(item);
+               }
+           }
+
+           @Override
+           public void onFailure(Call<AddItemResult> call, Throwable t) {
+
+           }
+       });
+    }
+
+    private void removeItem(final Item item){
+        Call<RemoveItemResult> call = api.removeItem(item.id);
+
+        call.enqueue(new Callback<RemoveItemResult>() {
+            @Override
+            public void onResponse(Call<RemoveItemResult> call, Response<RemoveItemResult> response) {
+                RemoveItemResult result = response.body();
+                if (result.status.equals("success")){
+                 //   adapter.remove(item.id);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RemoveItemResult> call, Throwable t) {
+
+            }
+        });
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ADD_ITEM_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             Item item = data.getParcelableExtra("item");
             if (item.type.equals(type)) {
-                adapter.addItem(item);
+  //              adapter.addItem(item);
+                addItem(item);
             }
         }
 
@@ -129,7 +175,7 @@ public class ItemsFragment extends Fragment {
 
     private void removeSelectedItems() {
         for (int i = adapter.getSelectedItems().size() - 1; i >= 0; i--) {
-            adapter.remove(adapter.getSelectedItems().get(i));
+           adapter.remove(adapter.getSelectedItems().get(i));
         }
         actionMode.finish();
     }

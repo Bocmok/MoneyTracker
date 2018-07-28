@@ -37,9 +37,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.colorIndicator));
         tabLayout.setTabTextColors(getResources().getColor(R.color.colorInactive),getResources().getColor(R.color.colorActive));
 
-        MainPagesAdapter adapter = new MainPagesAdapter(getSupportFragmentManager(),this);
-        viewPager.setAdapter(adapter);
-
         tabLayout.setupWithViewPager(viewPager);
 
         fab=findViewById(R.id.fab);
@@ -60,6 +57,23 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 startActivityForResult(intent, ADD_ITEM_REQUEST_CODE);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (((App) getApplication()).isAuthorized()){
+            initTabs();
+        } else {
+            Intent intent=new Intent(this, AuthActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    public void initTabs(){
+        MainPagesAdapter adapter = new MainPagesAdapter(getSupportFragmentManager(),this);
+        viewPager.setAdapter(adapter);
     }
 
     @Override
