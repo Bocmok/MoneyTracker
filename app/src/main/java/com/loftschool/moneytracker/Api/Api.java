@@ -23,7 +23,8 @@ public interface Api {
     @POST("items/add")
     Call<AddItemResult> addItem(@Query("name") String name, @Query("price") String price, @Query("type") String type);
 
-//    @GET("logout")
+    @GET("balance")
+    Call<BalanceResult>balance();
 
 
 }

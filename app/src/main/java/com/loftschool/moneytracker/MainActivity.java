@@ -18,6 +18,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private TabLayout tabLayout;
     private FloatingActionButton fab;
 
+    private boolean initialized = false;
+
     private android.support.v7.view.ActionMode actionMode;
 
     @Override
@@ -72,8 +74,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     }
 
     public void initTabs(){
-        MainPagesAdapter adapter = new MainPagesAdapter(getSupportFragmentManager(),this);
-        viewPager.setAdapter(adapter);
+        if (!initialized){
+            MainPagesAdapter adapter = new MainPagesAdapter(getSupportFragmentManager(),this);
+            viewPager.setAdapter(adapter);
+            initialized = true;
+        }
+
     }
 
     @Override
