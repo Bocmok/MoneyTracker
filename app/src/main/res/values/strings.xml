@@ -18,4 +18,14 @@
     <string name="dialog_positive_button">Да</string>
     <string name="dialog_negative_button">Нет</string>
 
+    <string name="balance_total">Ваш баланс</string>
+    <string name="balance_incomes">Расход</string>
+    <string name="balance_expenses">Доход</string>
+
+    <string name="price">%1$d \u20bd</string>
+
+    <string name="auth_activity_title">Ваш незаменимый помощник в управлении бюджетом</string>
+
+
+
 </resources>
